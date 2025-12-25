@@ -1,110 +1,95 @@
-# unix-v4-web
+# Unix V4 Web
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E.svg?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Platform](https://img.shields.io/badge/Platform-Browser%20%7C%20Node.js-blue.svg)](https://github.com/aygp-dr/unix-v4-web)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow.svg)]()
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)]()
 
-A faithful simulation of Unix V4 (1973) for the browser and Node.js. Experience computing history from Bell Labs as it was meant to be.
+**Unix Fourth Edition (1973) running in your browser and Node.js.**
 
-## Features
+The first operating system with its kernel written in C, recovered from a
+University of Utah tape in December 2025, now preserved in JavaScript.
 
-- **Authentic Shell** - Experience the original Unix shell interface
-- **Filesystem Simulation** - Navigate a simulated Unix V4 filesystem
-- **Classic Games** - Play original Unix games:
-  - `wump` - Hunt the Wumpus
-  - `ttt` - Tic-Tac-Toe
-  - `moo` - Bulls and Cows (Mastermind precursor)
-- **Cross-Platform** - Runs in modern browsers and Node.js
-
-## Installation
-
-```bash
-npm install unix-v4-web
-```
-
-## Usage
-
-### Command Line
-
-```bash
-npx unix-v4
-```
-
-Or if installed globally:
-
-```bash
-unix-v4
-```
-
-### Browser
-
-```html
-<script type="module">
-  import { UnixV4 } from 'unix-v4-web';
-
-  const unix = new UnixV4();
-  unix.boot();
-</script>
-```
+## Quick Start
 
 ### Node.js
 
-```javascript
-import { UnixV4 } from 'unix-v4-web';
-
-const unix = new UnixV4();
-unix.boot();
-```
-
-## Development
-
 ```bash
-# Clone the repository
-git clone https://github.com/aygp-dr/unix-v4-web.git
+git clone https://github.com/aygp-dr/unix-v4-web
 cd unix-v4-web
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run dev
-
-# Build for browser
-npm run build
-
-# Run tests
-npm test
+node bin/unix-v4.js
 ```
+
+## Games Included
+
+| Game | Size | Description |
+|------|------|-------------|
+| **moo** | 624 bytes | Bulls and Cows (Mastermind predecessor) |
+| **ttt** | 2,192 bytes | Tic-Tac-Toe with **machine learning** |
+| **wump** | 5,386 bytes | Hunt the Wumpus |
+
+## Features
+
+### Shell Commands
+
+```
+ls [-la]      - list directory contents
+cd [dir]      - change directory
+pwd           - print working directory
+cat file      - display file contents
+date          - show current date/time
+help          - show all commands
+exit          - exit shell
+```
+
+### TTT Learning
+
+The tic-tac-toe learns from experience, like the 1973 original:
+
+```
+# ttt
+Tic-Tac-Toe
+Accumulated knowledge? y
+268 'bits' of knowledge
+```
+
+When you beat it, it updates its knowledge. Play again—it won't fall
+for the same tricks.
 
 ## Historical Context
 
-Unix V4 was released in November 1973 at Bell Labs. It was the first version written in C (rewritten from the original PDP-7 assembly), making Unix portable across different hardware platforms. This milestone laid the foundation for modern operating systems.
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Unix Fourth Edition                       │
+│                                                             │
+│  Released: November 1973                                    │
+│  Authors: Ken Thompson, Dennis Ritchie                      │
+│  Significance: First Unix with kernel written in C          │
+│  Recovered: December 2025 from University of Utah tape      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-Key figures:
-- **Ken Thompson** - Co-creator of Unix
-- **Dennis Ritchie** - Co-creator of Unix and C programming language
-
-## Project Structure
+## Architecture
 
 ```
 unix-v4-web/
 ├── src/
-│   ├── kernel/      # Kernel simulation
-│   ├── shell/       # Shell interpreter
-│   ├── fs/          # Filesystem implementation
-│   └── games/       # Classic Unix games
-├── public/          # Static assets
-├── docs/            # Documentation
-└── dist/            # Browser bundle
+│   ├── fs/filesystem.js    # Inode-based filesystem
+│   ├── shell/shell.js      # V4 shell simulation
+│   ├── games/
+│   │   ├── moo.js          # Bulls and Cows
+│   │   ├── ttt.js          # Tic-Tac-Toe with learning
+│   │   └── wump.js         # Hunt the Wumpus
+│   └── index.js            # Main exports
+├── bin/unix-v4.js          # CLI entry point
+└── public/index.html       # Web terminal
 ```
-
-## License
-
-MIT License - See [LICENSE](LICENSE) for details.
 
 ## References
 
-- [Unix Heritage Society](https://www.tuhs.org/)
-- [The Unix Tree - Unix V4](https://minnie.tuhs.org/cgi-bin/utree.pl?file=V4)
-- [Dennis Ritchie's Home Page](https://www.bell-labs.com/usr/dmr/www/)
+- [squoze.net Unix V4](http://squoze.net/UNIX/v4/)
+- [Unix History Repository](https://github.com/dspinellis/unix-history-repo)
+- [MENACE](https://en.wikipedia.org/wiki/MENACE_(machine_learning))
+
+## License
+
+MIT

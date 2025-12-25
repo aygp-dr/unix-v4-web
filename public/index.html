@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix V4 (1973) - Web Terminal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a2e;
+      color: #eee;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #16213e;
+      padding: 1rem 2rem;
+      border-bottom: 2px solid #e94560;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #e94560;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    #terminal {
+      flex: 1;
+      background: #0f0f23;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: #16213e;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .games {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .game-btn {
+      background: #e94560;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.8rem;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .game-btn:hover {
+      background: #ff6b6b;
+    }
+
+    footer {
+      background: #16213e;
+      padding: 0.5rem 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    footer a {
+      color: #e94560;
+    }
+
+    /* xterm overrides */
+    .xterm {
+      padding: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Unix V4</h1>
+    <div class="subtitle">Bell Telephone Laboratories, 1973 — First Unix with kernel in C</div>
+  </header>
+
+  <main>
+    <div class="info-bar">
+      <div>Type <code>help</code> for commands</div>
+      <div class="games">
+        <span>Quick launch:</span>
+        <button class="game-btn" onclick="runCommand('moo')">moo</button>
+        <button class="game-btn" onclick="runCommand('ttt')">ttt</button>
+        <button class="game-btn" onclick="runCommand('wump')">wump</button>
+      </div>
+    </div>
+    <div id="terminal"></div>
+  </main>
+
+  <footer>
+    Recovered from University of Utah tape, December 2025.
+    <a href="https://github.com/aygp-dr/unix-v4-web">Source on GitHub</a>
+  </footer>
+
+  <script type="module">
+    import { Terminal } from 'https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm';
+    import { FitAddon } from 'https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/+esm';
+    import { UnixShell } from '../src/shell/shell.js';
+
+    const term = new Terminal({
+      cursorBlink: true,
+      fontFamily: '"Courier New", monospace',
+      fontSize: 14,
+      theme: {
+        background: '#0f0f23',
+        foreground: '#cccccc',
+        cursor: '#e94560',
+        cursorAccent: '#0f0f23',
+        selection: '#e9456040',
+      }
+    });
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+
+    const container = document.getElementById('terminal');
+    term.open(container);
+    fitAddon.fit();
+
+    window.addEventListener('resize', () => fitAddon.fit());
+
+    // I/O interface
+    let inputResolve = null;
+    let inputBuffer = '';
+
+    const io = {
+      write: (s) => term.write(s.replace(/\n/g, '\r\n')),
+      read: () => new Promise((resolve) => { inputResolve = resolve; })
+    };
+
+    // Handle keyboard input
+    term.onData((data) => {
+      if (data === '\r') {
+        term.write('\r\n');
+        if (inputResolve) {
+          const line = inputBuffer;
+          inputBuffer = '';
+          inputResolve(line);
+          inputResolve = null;
+        }
+      } else if (data === '\x7f' || data === '\b') {
+        if (inputBuffer.length > 0) {
+          inputBuffer = inputBuffer.slice(0, -1);
+          term.write('\b \b');
+        }
+      } else if (data === '\x03') {
+        inputBuffer = '';
+        term.write('^C\r\n');
+        if (inputResolve) {
+          inputResolve(null);
+          inputResolve = null;
+        }
+      } else if (data >= ' ' || data === '\t') {
+        inputBuffer += data;
+        term.write(data);
+      }
+    });
+
+    // Make runCommand available globally
+    window.runCommand = (cmd) => {
+      if (inputResolve) {
+        term.write(cmd + '\r\n');
+        inputBuffer = '';
+        inputResolve(cmd);
+        inputResolve = null;
+      }
+    };
+
+    // Boot message
+    term.writeln('');
+    term.writeln('┌──────────────────────────────────────────────────────────────┐');
+    term.writeln('│                                                              │');
+    term.writeln('│   ██╗   ██╗███╗   ██╗██╗██╗  ██╗    ██╗   ██╗██╗  ██╗       │');
+    term.writeln('│   ██║   ██║████╗  ██║██║╚██╗██╔╝    ██║   ██║██║  ██║       │');
+    term.writeln('│   ██║   ██║██╔██╗ ██║██║ ╚███╔╝     ██║   ██║███████║       │');
+    term.writeln('│   ██║   ██║██║╚██╗██║██║ ██╔██╗     ╚██╗ ██╔╝╚════██║       │');
+    term.writeln('│   ╚██████╔╝██║ ╚████║██║██╔╝ ██╗     ╚████╔╝      ██║       │');
+    term.writeln('│    ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝      ╚═══╝       ╚═╝       │');
+    term.writeln('│                                                              │');
+    term.writeln('│           Bell Telephone Laboratories, 1973                  │');
+    term.writeln('│                                                              │');
+    term.writeln('└──────────────────────────────────────────────────────────────┘');
+    term.writeln('');
+
+    // Run shell
+    const shell = new UnixShell(io);
+    shell.run().catch(err => {
+      term.writeln('Error: ' + err.message);
+    });
+  </script>
+</body>
+</html>
