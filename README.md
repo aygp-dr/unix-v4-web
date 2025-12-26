@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow.svg)]()
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)]()
+[![Node.js](https://img.shields.io/badge/Node.js-24_LTS-green.svg)]()
 
 **Unix Fourth Edition (1973) running in your browser and Node.js.**
 
